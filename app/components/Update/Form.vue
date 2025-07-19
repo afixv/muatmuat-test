@@ -70,6 +70,8 @@ const form = reactive<Form>({
   stock: null,
 });
 
+const toast = useToast();
+
 const route = useRoute();
 const slug = route.params.slug;
 
@@ -91,7 +93,9 @@ onMounted(() => {
       selectedProduct.value = product;
     }
   } catch (error) {
-    alert("Failed to load product data");
+    toast.error({
+      message: "Failed to load products. Please try again.",
+    });
   } finally {
     loading.value = false;
   }
@@ -103,12 +107,14 @@ const validateForm = () => {
     (!form.price && form.price !== 0) ||
     (!form.stock && form.stock !== 0)
   ) {
-    alert("Please fill in all fields correctly.");
+    toast.error({ message: "All fields are required." });
     return false;
   }
 
   if (form.price < 0 || form.stock < 0) {
-    alert("Price and stock must be non-negative.");
+    toast.error({
+      message: "Price and stock must be non-negative.",
+    });
     return false;
   }
 
@@ -127,7 +133,9 @@ const addData = () => {
   }
 
   if (slug === productArray.find((p: Product) => p.slug === slug)?.slug) {
-    alert("Product with this title already exists.");
+    toast.error({
+      message: "Another product with this title already exists.",
+    });
     return;
   }
 
@@ -141,9 +149,11 @@ const addData = () => {
   try {
     localStorage.setItem("products", JSON.stringify(productArray));
   } catch (error) {
-    alert("Failed to save product");
+    toast.error({
+      message: "Failed to add product. Please try again.",
+    });
   } finally {
-    alert("Product added successfully!");
+    toast.success({ message: "Product added successfully!" });
     router.push("/update");
   }
 };
@@ -155,7 +165,9 @@ const editData = () => {
   const selectedIndex = productArray.findIndex((p: Product) => p.slug === slug);
 
   if (selectedIndex === -1) {
-    alert("Product not found.");
+    toast.error({
+      message: "Product not found.",
+    });
     return;
   }
 
@@ -170,7 +182,9 @@ const editData = () => {
   );
 
   if (isDuplicateSlug) {
-    alert("Another product with this title already exists.");
+    toast.error({
+      message: "Another product with this title already exists.",
+    });
     return;
   }
 
@@ -189,9 +203,11 @@ const editData = () => {
   try {
     localStorage.setItem("products", JSON.stringify(productArray));
   } catch (error) {
-    alert("Failed to update product");
+    toast.error({
+      message: "Failed to update product. Please try again.",
+    });
   } finally {
-    alert("Product updated!");
+    toast.success({ message: "Product updated successfully!" });
     router.push("/update");
   }
 };

@@ -4,9 +4,7 @@
     <BaseModal v-model="openModal">
       <div class="p-4 flex flex-col items-center">
         <h2 class="text-xl font-bold">Delete Product</h2>
-        <p class=" text-gray-400 mt-1">
-          Are you sure to delete the product?
-        </p>
+        <p class="text-gray-400 mt-1">Are you sure to delete the product?</p>
         <div class="flex gap-x-4 mt-4">
           <button class="btn btn-danger" @click="deleteProduct">
             Yes, delete
@@ -59,6 +57,8 @@ const props = defineProps({
   },
 });
 
+const toast = useToast();
+
 const deleteProduct = () => {
   const products = localStorage.getItem("products");
   if (!products) return;
@@ -67,7 +67,7 @@ const deleteProduct = () => {
     (p: Product) => p.slug !== props.product.slug
   );
   localStorage.setItem("products", JSON.stringify(deleteProduct));
-  alert("Product deleted successfully!");
+  toast.success({ title: "Success", message: "Product deleted successfully!" });
   location.reload();
 };
 </script>
